@@ -62,9 +62,9 @@ export default async function Home() {
   }
 
   return (
-    <div className="bg-background">
+    <div className="h-svh snap-y snap-proximity overflow-y-auto bg-background">
       {/* HERO */}
-      <section className="dark relative isolate overflow-hidden bg-zinc-950 text-white">
+      <section className="dark relative isolate flex min-h-svh snap-start flex-col overflow-hidden bg-zinc-950 text-white">
         <Image
           src={heroImage}
           alt=""
@@ -76,7 +76,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-950/70 via-zinc-950/50 to-zinc-950/90 lg:bg-gradient-to-r lg:from-zinc-950/90 lg:via-zinc-950/65 lg:to-zinc-950/30" />
 
-        <header className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 lg:px-8">
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-5 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
               <PiggyBank className="size-5" aria-hidden="true" />
@@ -96,7 +96,7 @@ export default async function Home() {
           </nav>
         </header>
 
-        <div className="mx-auto max-w-6xl px-4 pt-16 pb-24 lg:px-8 lg:pt-28 lg:pb-36">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 pb-20 lg:px-8">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
             <ShieldCheck className="size-3.5" aria-hidden="true" />
             Gratis y privado: tus datos son solo tuyos
@@ -127,27 +127,29 @@ export default async function Home() {
       </section>
 
       {/* FEATURES */}
-      <section id="funciones" className="mx-auto max-w-6xl px-4 py-20 lg:px-8 lg:py-28">
+      <section id="funciones" className="flex min-h-svh snap-start items-center">
+        <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:py-20 lg:px-8">
         <p className="finance-label">Qué incluye</p>
-        <h2 className="mt-3 max-w-2xl font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h2 className="mt-3 max-w-2xl font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
           Todo lo que necesitás para ordenar tu plata, nada que no.
         </h2>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-4 lg:grid-cols-4">
           {FEATURES.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="finance-card rounded-2xl p-6">
+            <div key={title} className="finance-card rounded-2xl p-4 sm:p-6">
               <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
                 <Icon className="size-5" aria-hidden="true" />
               </span>
-              <h3 className="mt-5 font-heading text-lg font-semibold">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
+              <h3 className="mt-3 font-heading text-base font-semibold sm:mt-5 sm:text-lg">{title}</h3>
+              <p className="mt-1.5 text-xs leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-6">{text}</p>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
       {/* STEPS */}
-      <section className="border-y bg-muted/40">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <section className="flex min-h-svh snap-start items-center border-y bg-muted/40">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div>
             <p className="finance-label">Cómo funciona</p>
             <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -175,18 +177,18 @@ export default async function Home() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 py-20 lg:px-8">
-        <div className="relative isolate overflow-hidden rounded-3xl bg-zinc-950 px-6 py-16 text-center text-white sm:px-12">
+      <section className="dark relative isolate flex min-h-svh snap-start flex-col overflow-hidden bg-zinc-950 text-white">
+        <div className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
           <Image
             src={ctaImage}
             alt=""
             fill
             placeholder="blur"
-            sizes="(min-width: 1152px) 1152px, 100vw"
+            sizes="100vw"
             className="-z-20 object-cover"
           />
-          <div className="absolute inset-0 -z-10 bg-zinc-950/70" />
-          <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+          <div className="absolute inset-0 -z-10 bg-zinc-950/65" />
+          <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-6xl">
             Tomá el control de tu mes.
           </h2>
           <p className="mx-auto mt-4 max-w-md text-white/75">
@@ -206,17 +208,16 @@ export default async function Home() {
             </Button>
           </div>
         </div>
+        <footer className="border-t border-white/10">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-white/60 sm:flex-row lg:px-8">
+            <span className="flex items-center gap-2">
+              <PiggyBank className="size-4" aria-hidden="true" />
+              Piggy Bank
+            </span>
+            <span>Hecho para ordenar tus finanzas personales.</span>
+          </div>
+        </footer>
       </section>
-
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row lg:px-8">
-          <span className="flex items-center gap-2">
-            <PiggyBank className="size-4" aria-hidden="true" />
-            Piggy Bank
-          </span>
-          <span>Hecho para ordenar tus finanzas personales.</span>
-        </div>
-      </footer>
     </div>
   );
 }
