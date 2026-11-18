@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthShell } from "@/components/auth-shell";
-import { ShieldCheck, Sparkles } from "lucide-react";
+import { PiggyBank, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,9 +53,12 @@ export default function LoginPage() {
       description="Una forma simple y privada de saber cuánto entra, cuánto sale y cuánto te queda."
       features={[{ icon: ShieldCheck, text: "Tus datos son solo tuyos, protegidos por usuario." }, { icon: Sparkles, text: "Movimientos, metas y reportes en un solo lugar." }]}
     >
-        <Card className="w-full max-w-md rounded-2xl border-white/10 bg-card/95 shadow-2xl backdrop-blur-xl">
-          <CardHeader className="space-y-3">
-            <CardTitle className="font-heading text-3xl">Iniciar sesión</CardTitle>
+        <Card className="w-full max-w-md rounded-3xl bg-card/95 shadow-2xl backdrop-blur-xl [--card-spacing:--spacing(6)] sm:[--card-spacing:--spacing(9)]">
+          <CardHeader className="justify-items-center gap-2 text-center">
+            <span className="mb-2 grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <PiggyBank className="size-6" aria-hidden="true" />
+            </span>
+            <CardTitle className="font-heading text-3xl tracking-tight">Iniciar sesión</CardTitle>
             <CardDescription>
               Entrá a tu gestor de gastos y ahorros.
             </CardDescription>
@@ -66,6 +69,7 @@ export default function LoginPage() {
                 <Label htmlFor="email">Correo</Label>
                 <Input
                   id="email"
+                  className="h-11"
                   type="email"
                   required
                   value={email}
@@ -77,19 +81,20 @@ export default function LoginPage() {
                 <Label htmlFor="password">Contraseña</Label>
                 <PasswordInput
                   id="password"
+                  className="h-11"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" disabled={loading} className="mt-2 h-11 rounded-xl">
+              <Button type="submit" disabled={loading} className="mt-2 h-11 w-full text-base">
                 {loading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
+            <p className="mt-6 text-center text-sm text-muted-foreground">
               ¿No tenés cuenta?{" "}
-              <Link href="/signup" className="underline underline-offset-4">
+              <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
                 Registrate
               </Link>
             </p>
