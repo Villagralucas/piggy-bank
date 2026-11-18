@@ -22,7 +22,7 @@ export function DashboardNav({ variant }: { variant: "desktop" | "mobile" }) {
 
   if (variant === "mobile") {
     return (
-      <nav className="flex gap-2 overflow-x-auto border-t px-4 py-3 md:hidden">
+      <nav className="flex gap-2.5 overflow-x-auto border-t px-4 py-3 md:hidden">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
@@ -43,14 +43,14 @@ export function DashboardNav({ variant }: { variant: "desktop" | "mobile" }) {
   }
 
   return (
-    <nav className="hidden rounded-full border bg-card p-1 md:flex">
+    <nav className="hidden gap-1.5 rounded-full border bg-card p-1.5 md:flex">
       {NAV_ITEMS.map((item) => (
         <Link
           key={item.href}
           href={item.href}
           aria-current={isActive(pathname, item.href) ? "page" : undefined}
           className={cn(
-            "whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
+            "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
             isActive(pathname, item.href)
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
