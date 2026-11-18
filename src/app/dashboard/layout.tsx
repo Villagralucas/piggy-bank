@@ -43,11 +43,11 @@ export default async function DashboardLayout({
           Modo demo - datos de ejemplo
         </div>
       )}
-      <header className="sticky top-0 z-30 border-b bg-background/78 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+              <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
                 <PiggyBank className="size-5" aria-hidden="true" />
               </span>
               <span>
@@ -59,7 +59,7 @@ export default async function DashboardLayout({
                 </span>
               </span>
             </Link>
-            <nav className="hidden rounded-full border bg-card/70 p-1 shadow-sm sm:flex">
+            <nav className="hidden rounded-full border bg-card p-1 sm:flex">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.href}

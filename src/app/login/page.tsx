@@ -50,9 +50,9 @@ export default function LoginPage() {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <section className="hidden content-between rounded-[2rem] border bg-zinc-950 p-8 text-white shadow-2xl lg:grid">
+      <section className="hidden content-between rounded-2xl border bg-zinc-950 p-8 text-white lg:grid">
         <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground">
+          <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground">
             <PiggyBank className="size-6" aria-hidden="true" />
           </span>
           <div>
@@ -62,7 +62,7 @@ export default function LoginPage() {
         </div>
 
         <div className="max-w-xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-300">
             Finanzas con foco
           </p>
           <h1 className="mt-4 font-heading text-5xl font-semibold leading-tight tracking-tight">
@@ -76,11 +76,11 @@ export default function LoginPage() {
 
         <div className="grid gap-3 text-sm text-white/70">
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <ShieldCheck className="size-5 text-primary" aria-hidden="true" />
+            <ShieldCheck className="size-5 text-indigo-300" aria-hidden="true" />
             Tus datos se separan por usuario con Supabase.
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <Sparkles className="size-5 text-accent" aria-hidden="true" />
+            <Sparkles className="size-5 text-indigo-300" aria-hidden="true" />
             Reportes, movimientos y metas en un solo lugar.
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function LoginPage() {
       <section className="grid place-items-center px-0 py-12 lg:px-8">
         <Card className="finance-card w-full max-w-md rounded-[1.75rem]">
           <CardHeader className="space-y-3">
-            <div className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground lg:hidden">
+            <div className="grid size-12 place-items-center rounded-xl bg-primary text-primary-foreground lg:hidden">
               <PiggyBank className="size-6" aria-hidden="true" />
             </div>
             <CardTitle className="font-heading text-3xl">Iniciar sesión</CardTitle>

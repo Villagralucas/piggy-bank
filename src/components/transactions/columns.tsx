@@ -127,7 +127,7 @@ export function createColumns({
         <div
           className={cn(
             "text-right font-medium whitespace-nowrap",
-            row.original.type === "income" ? "text-emerald-600" : "text-red-600"
+            row.original.type === "income" ? "text-success" : "text-destructive"
           )}
         >
           {row.original.type === "income" ? "+" : "-"}

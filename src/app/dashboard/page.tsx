@@ -59,28 +59,28 @@ export default async function DashboardPage() {
         <Card className="finance-hero-card">
           <CardHeader className="flex flex-row items-start justify-between pb-8">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/55">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 Patrimonio disponible
               </p>
               <CardTitle className="mt-3 font-heading text-4xl font-semibold tracking-tight md:text-5xl">
                 {formatCurrency(totalBalance)}
               </CardTitle>
             </div>
-            <span className="grid size-12 place-items-center rounded-2xl border border-white/10 bg-white/10 text-primary">
+            <span className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
               <Wallet className="size-6" aria-hidden="true" />
             </span>
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/8 p-4">
-                <p className="text-xs font-medium text-white/55">Ingresos del mes</p>
-                <p className="mt-2 font-heading text-2xl font-semibold text-primary">
+              <div className="rounded-xl bg-muted/60 p-4">
+                <p className="text-xs font-medium text-muted-foreground">Ingresos del mes</p>
+                <p className="mt-2 font-heading text-2xl font-semibold text-success">
                   {formatCurrency(monthIncome)}
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/8 p-4">
-                <p className="text-xs font-medium text-white/55">Gastos del mes</p>
-                <p className="mt-2 font-heading text-2xl font-semibold text-red-300">
+              <div className="rounded-xl bg-muted/60 p-4">
+                <p className="text-xs font-medium text-muted-foreground">Gastos del mes</p>
+                <p className="mt-2 font-heading text-2xl font-semibold text-destructive">
                   {formatCurrency(monthExpense)}
                 </p>
               </div>
@@ -111,9 +111,9 @@ export default async function DashboardPage() {
           },
         ].map((item) => (
           <Link key={item.href} href={item.href}>
-            <Card className="finance-card h-full transition-transform hover:-translate-y-0.5">
+            <Card className="finance-card h-full hover:border-primary/40">
               <CardContent className="flex items-center gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
                   <item.icon className="size-5" aria-hidden="true" />
                 </span>
                 <div className="flex-1">
@@ -139,7 +139,7 @@ export default async function DashboardPage() {
                 Aún no registras movimientos.
               </p>
             ) : (
-              <div className="flex flex-col divide-y rounded-2xl border bg-background/45 px-4">
+              <div className="flex flex-col divide-y rounded-xl border px-4">
                 {recentTransactions.map((t) => (
                   <div key={t.id} className="flex items-center justify-between gap-4 py-4">
                     <div>
@@ -153,8 +153,8 @@ export default async function DashboardPage() {
                     <p
                       className={
                         t.type === "income"
-                          ? "font-heading font-semibold text-primary"
-                          : "font-heading font-semibold text-red-500"
+                          ? "font-heading font-semibold text-success"
+                          : "font-heading font-semibold text-destructive"
                       }
                     >
                       {t.type === "income" ? "+" : "-"}
