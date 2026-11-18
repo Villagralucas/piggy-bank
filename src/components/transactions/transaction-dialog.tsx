@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createTransaction } from "@/app/dashboard/transactions/actions";
+import { MoneyInput } from "@/components/money-input";
 import type { Account, Category, TransactionType } from "@/lib/types";
 import { Plus } from "lucide-react";
 
@@ -33,13 +34,19 @@ function todayISO() {
 export function TransactionDialog({
   accounts,
   categories,
+  triggerLabel = "Nuevo movimiento",
+  size = "sm",
 }: {
   accounts: Account[];
   categories: Category[];
+  triggerLabel?: string;
+  size?: "sm" | "default" | "lg";
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [type, setType] = useState<TransactionType>("expense");
+  const [accountId, setAccountId] = useState<string | null>(null);
+  const currency = accounts.find((a) => a.id === accountId)?.currency ?? "ARS";
 
   const filteredCategories = useMemo(
     () => categories.filter((c) => c.kind === type),
@@ -65,9 +72,9 @@ export function TransactionDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size="sm" disabled={accounts.length === 0}>
+          <Button size={size} disabled={accounts.length === 0}>
             <Plus className="size-4" />
-            Nuevo movimiento
+            {triggerLabel}
           </Button>
         }
       />
@@ -94,14 +101,7 @@ export function TransactionDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="amount">Monto</Label>
-                <Input
-                  id="amount"
-                  name="amount"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  required
-                />
+                <MoneyInput id="amount" name="amount" currency={currency} required />
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="occurred_at">Fecha</Label>
@@ -117,7 +117,12 @@ export function TransactionDialog({
 
             <div className="flex flex-col gap-2">
               <Label htmlFor="account_id">Cuenta</Label>
-              <Select name="account_id" required>
+              <Select
+                name="account_id"
+                required
+                value={accountId}
+                onValueChange={(v) => setAccountId(v ? String(v) : null)}
+              >
                 <SelectTrigger id="account_id" className="w-full">
                   <SelectValue placeholder="Selecciona una cuenta">
                     {(value: string | null) =>

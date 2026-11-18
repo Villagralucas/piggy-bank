@@ -31,8 +31,8 @@ function categoryId(name: string) {
 }
 
 const demoAccounts: Account[] = [
-  { id: uid(), user_id: DEMO_USER_ID, name: "Cuenta corriente", type: "bank", currency: "USD", initial_balance: 1200, created_at: now },
-  { id: uid(), user_id: DEMO_USER_ID, name: "Efectivo", type: "cash", currency: "USD", initial_balance: 80, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, name: "Cuenta corriente", type: "bank", currency: "ARS", initial_balance: 1200000, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, name: "Efectivo", type: "cash", currency: "ARS", initial_balance: 80000, created_at: now },
 ];
 
 function accountId(name: string) {
@@ -103,7 +103,7 @@ const demoTransactions: Transaction[] = demoTransactionSeeds.map(
     account_id: accountId(account),
     category_id: categoryId(category),
     type,
-    amount,
+    amount: amount * 1000,
     description,
     occurred_at: daysAgo(days),
     created_at: now,
@@ -111,11 +111,20 @@ const demoTransactions: Transaction[] = demoTransactionSeeds.map(
 );
 
 const demoGoals: SavingsGoal[] = [
-  { id: uid(), user_id: DEMO_USER_ID, name: "Fondo de emergencia", target_amount: 3000, current_amount: 850, target_date: null, created_at: now },
-  { id: uid(), user_id: DEMO_USER_ID, name: "Vacaciones", target_amount: 800, current_amount: 200, target_date: daysAgo(-90), created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, name: "Fondo de emergencia", target_amount: 3000000, current_amount: 850000, target_date: null, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, name: "Vacaciones", target_amount: 800000, current_amount: 200000, target_date: daysAgo(-90), created_at: now },
 ];
 
+let demoMonthlyBudget: number | null = 1500000;
+
 export const demoStore = {
+  getMonthlyBudget(): number | null {
+    return demoMonthlyBudget;
+  },
+  setMonthlyBudget(amount: number | null) {
+    demoMonthlyBudget = amount;
+  },
+
   getAccounts(): Account[] {
     return demoAccounts;
   },

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/money-input";
 import { addContribution } from "@/app/dashboard/goals/actions";
 
 export function ContributionForm({ goalId }: { goalId: string }) {
@@ -11,7 +11,7 @@ export function ContributionForm({ goalId }: { goalId: string }) {
   const [pending, startTransition] = useTransition();
 
   function submit(sign: 1 | -1) {
-    const value = Number(amount);
+    const value = Number(amount.replace(",", "."));
     if (!value || value <= 0) {
       toast.error("Ingresa un monto válido");
       return;
@@ -29,14 +29,11 @@ export function ContributionForm({ goalId }: { goalId: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Input
-        type="number"
-        step="0.01"
-        min="0.01"
+      <MoneyInput
         placeholder="Monto"
         value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="h-8 w-28"
+        onCleanChange={setAmount}
+        className="w-36"
       />
       <Button size="sm" variant="outline" disabled={pending} onClick={() => submit(1)}>
         + Ahorrar

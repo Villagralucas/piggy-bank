@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createAccount } from "@/app/dashboard/accounts/actions";
+import { MoneyInput } from "@/components/money-input";
 import { Plus } from "lucide-react";
 
 const ACCOUNT_TYPES = [
@@ -32,8 +33,14 @@ const ACCOUNT_TYPES = [
   { value: "other", label: "Otro" },
 ];
 
+const CURRENCIES = [
+  { value: "ARS", label: "Pesos (ARS)" },
+  { value: "USD", label: "Dólares (USD)" },
+];
+
 export function AccountDialog() {
   const [open, setOpen] = useState(false);
+  const [currency, setCurrency] = useState("ARS");
   const [pending, startTransition] = useTransition();
 
   function handleSubmit(formData: FormData) {
@@ -94,16 +101,33 @@ export function AccountDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="currency">Moneda</Label>
-                <Input id="currency" name="currency" defaultValue="USD" />
+                <Select
+                  name="currency"
+                  value={currency}
+                  onValueChange={(v) => setCurrency(String(v ?? "ARS"))}
+                >
+                  <SelectTrigger id="currency" className="w-full">
+                    <SelectValue>
+                      {(value: string | null) =>
+                        CURRENCIES.find((c) => c.value === value)?.label ?? "Moneda"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CURRENCIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="initial_balance">Saldo inicial</Label>
-                <Input
+                <MoneyInput
                   id="initial_balance"
                   name="initial_balance"
-                  type="number"
-                  step="0.01"
-                  defaultValue="0"
+                  currency={currency}
                 />
               </div>
             </div>

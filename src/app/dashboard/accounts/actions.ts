@@ -15,8 +15,8 @@ function revalidateAll() {
 export async function createAccount(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const type = String(formData.get("type") ?? "cash") as AccountType;
-  const currency = String(formData.get("currency") ?? "USD").trim() || "USD";
-  const initial_balance = Number(formData.get("initial_balance") ?? 0);
+  const currency = String(formData.get("currency") ?? "ARS").trim() || "ARS";
+  const initial_balance = Number(formData.get("initial_balance") || 0);
 
   if (!name) throw new Error("El nombre de la cuenta es obligatorio");
 

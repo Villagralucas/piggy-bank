@@ -5,12 +5,31 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number, currency = "USD") {
-  return new Intl.NumberFormat("es", {
+export const DEFAULT_CURRENCY = "ARS"
+
+export function formatCurrency(amount: number, currency = DEFAULT_CURRENCY) {
+  const hasCents = Math.round(Math.abs(amount) * 100) % 100 !== 0
+  return new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency,
+    minimumFractionDigits: hasCents ? 2 : 0,
     maximumFractionDigits: 2,
   }).format(amount)
+}
+
+export function formatCompactCurrency(amount: number, currency = DEFAULT_CURRENCY) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency,
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(amount)
+}
+
+export function currencySymbol(currency = DEFAULT_CURRENCY) {
+  if (currency === "ARS") return "$"
+  if (currency === "USD") return "US$"
+  return currency
 }
 
 export function formatDate(date: string) {

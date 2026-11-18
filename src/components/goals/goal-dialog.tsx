@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/money-input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -58,14 +59,7 @@ export function GoalDialog() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="target_amount">Monto objetivo</Label>
-              <Input
-                id="target_amount"
-                name="target_amount"
-                type="number"
-                step="0.01"
-                min="0.01"
-                required
-              />
+              <MoneyInput id="target_amount" name="target_amount" required />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="target_date">Fecha objetivo (opcional)</Label>
