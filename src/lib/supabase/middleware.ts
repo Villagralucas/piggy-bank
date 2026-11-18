@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { DEMO_COOKIE, DEMO_MODE } from "@/lib/demo-mode";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback", "/demo"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth/", "/demo"];
 
 export async function updateSession(request: NextRequest) {
   if (DEMO_MODE) {
