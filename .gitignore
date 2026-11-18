@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# keep the env template (no secrets inside)
+!.env.local.example
+
+# local editor / Claude settings
+.claude/settings.local.json
+.vscode/
+.idea/
+Thumbs.db
