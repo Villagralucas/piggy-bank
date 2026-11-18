@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import type { SavingsGoal } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -13,7 +13,7 @@ import { deleteGoal } from "@/app/dashboard/goals/actions";
 export default async function GoalsPage() {
   let goalsList: SavingsGoal[];
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     goalsList = demoStore.getGoals();
   } else {
     const supabase = await createClient();

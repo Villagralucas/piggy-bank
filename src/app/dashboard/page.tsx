@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import type { Account, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   let accountsList: Account[];
   let transactionsList: Transaction[];
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     accountsList = demoStore.getAccounts();
     transactionsList = demoStore.getTransactions();
   } else {

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 
 export async function createGoal(formData: FormData) {
@@ -14,7 +14,7 @@ export async function createGoal(formData: FormData) {
   if (!target_amount || target_amount <= 0)
     throw new Error("La meta debe ser mayor a 0");
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.createGoal({ name, target_amount, target_date });
     revalidatePath("/dashboard/goals");
     return;
@@ -39,7 +39,7 @@ export async function createGoal(formData: FormData) {
 }
 
 export async function addContribution(goalId: string, amount: number) {
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.addContribution(goalId, amount);
     revalidatePath("/dashboard/goals");
     return;
@@ -68,7 +68,7 @@ export async function addContribution(goalId: string, amount: number) {
 }
 
 export async function deleteGoal(goalId: string) {
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.deleteGoal(goalId);
     revalidatePath("/dashboard/goals");
     return;

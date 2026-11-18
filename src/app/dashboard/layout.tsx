@@ -2,7 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { DEMO_MODE, isDemo } from "@/lib/demo-mode";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Toaster } from "@/components/ui/sonner";
@@ -22,8 +22,9 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   let userEmail: string | null = null;
+  const demo = await isDemo();
 
-  if (!DEMO_MODE) {
+  if (!demo) {
     const supabase = await createClient();
     const {
       data: { user },
@@ -38,9 +39,19 @@ export default async function DashboardLayout({
 
   return (
     <div className="finance-shell">
-      {DEMO_MODE && (
-        <div className="border-b bg-secondary px-4 py-2 text-center text-sm font-medium text-secondary-foreground">
-          Modo demo - datos de ejemplo
+      {demo && (
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground">
+          <span>Estás viendo una demo con datos de ejemplo.</span>
+          {!DEMO_MODE && (
+            <span className="flex gap-3">
+              <a href="/demo/salir?to=signup" className="underline underline-offset-4">
+                Crear mi cuenta
+              </a>
+              <a href="/demo/salir" className="underline underline-offset-4 opacity-80">
+                Salir de la demo
+              </a>
+            </span>
+          )}
         </div>
       )}
       <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
@@ -73,10 +84,10 @@ export default async function DashboardLayout({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden max-w-48 truncate rounded-full border bg-card/70 px-3 py-1.5 text-sm text-muted-foreground sm:inline">
-              {DEMO_MODE ? "Modo demo" : userEmail}
+              {demo ? "Modo demo" : userEmail}
             </span>
             <ThemeToggle />
-            {!DEMO_MODE && <SignOutButton />}
+            {!demo && <SignOutButton />}
           </div>
         </div>
         <nav className="flex gap-2 overflow-x-auto border-t px-4 py-3 sm:hidden">

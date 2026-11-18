@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import type { Category, Transaction } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +21,7 @@ export default async function ReportsPage() {
   let categoriesList: Category[];
   let transactionsList: Transaction[];
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     categoriesList = demoStore.getCategories();
     transactionsList = [...demoStore.getTransactions()].sort((a, b) =>
       a.occurred_at.localeCompare(b.occurred_at)

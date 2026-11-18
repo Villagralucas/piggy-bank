@@ -4,11 +4,12 @@ import { redirect } from "next/navigation";
 import {
   ArrowRight,
   ChartPie,
+  Check,
+  Eye,
   Landmark,
   PiggyBank,
   ReceiptText,
   ShieldCheck,
-  Smartphone,
   Target,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -22,29 +23,27 @@ const FEATURES = [
   {
     icon: ReceiptText,
     title: "Movimientos",
-    text: "Cargá ingresos y gastos en segundos, con categoría, cuenta y fecha. Filtrá y ordená cuando quieras.",
+    text: "Cargá ingresos y gastos en segundos y encontralos cuando los necesites.",
+    points: ["Categoría, cuenta y fecha", "Filtros por tipo y búsqueda", "Borrado de a uno o en lote"],
   },
   {
     icon: Landmark,
     title: "Cuentas",
-    text: "Efectivo, banco, tarjeta o ahorro: cada cuenta con su saldo actualizado solo.",
+    text: "Efectivo, banco, tarjeta o ahorro, cada una con su propio saldo.",
+    points: ["Saldo que se actualiza solo", "Saldo inicial al crearla", "Total disponible en el resumen"],
   },
   {
     icon: Target,
     title: "Metas de ahorro",
-    text: "Ponele nombre y monto a lo que querés lograr y mirá cómo avanza la barra.",
+    text: "Ponele nombre y monto a lo que querés lograr y seguí cómo avanza.",
+    points: ["Barra de progreso", "Aportes cuando quieras", "Fecha objetivo opcional"],
   },
   {
     icon: ChartPie,
     title: "Reportes",
-    text: "Dónde se va la plata por categoría y cómo venís mes a mes, en gráficos claros.",
+    text: "Mirá dónde se va la plata y cómo venís mes a mes.",
+    points: ["Gastos por categoría", "Ingresos vs. gastos, 6 meses", "Gráficos claros y simples"],
   },
-];
-
-const STEPS = [
-  { title: "Creá tu cuenta", text: "Solo mail y contraseña. Las categorías básicas ya vienen cargadas." },
-  { title: "Sumá tus cuentas", text: "Agregá efectivo, banco o tarjeta con el saldo que tenés hoy." },
-  { title: "Registrá y mirá", text: "Cargá tus movimientos y seguí tu mes desde el resumen." },
 ];
 
 export default async function Home() {
@@ -62,7 +61,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="h-svh snap-y snap-proximity overflow-y-auto bg-background">
+    <div className="h-svh snap-y snap-mandatory overflow-y-auto bg-background">
       {/* HERO */}
       <section className="dark relative isolate flex min-h-svh snap-start flex-col overflow-hidden bg-zinc-950 text-white">
         <Image
@@ -97,7 +96,7 @@ export default async function Home() {
         </header>
 
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 pb-20 lg:px-8">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
+          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
             <ShieldCheck className="size-3.5" aria-hidden="true" />
             Gratis y privado: tus datos son solo tuyos
           </p>
@@ -123,56 +122,56 @@ export default async function Home() {
               Ya tengo cuenta
             </Button>
           </div>
+          <a
+            href="/demo"
+            className="mt-5 inline-flex w-fit items-center gap-2 text-sm font-medium text-white/80 underline-offset-4 hover:text-white hover:underline"
+          >
+            <Eye className="size-4" aria-hidden="true" />
+            Ver una demo del tablero, sin registrarte
+          </a>
         </div>
       </section>
 
       {/* FEATURES */}
       <section id="funciones" className="flex min-h-svh snap-start items-center">
-        <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:py-20 lg:px-8">
-        <p className="finance-label">Qué incluye</p>
-        <h2 className="mt-3 max-w-2xl font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
-          Todo lo que necesitás para ordenar tu plata, nada que no.
-        </h2>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-4 lg:grid-cols-4">
-          {FEATURES.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="finance-card rounded-2xl p-4 sm:p-6">
-              <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
-                <Icon className="size-5" aria-hidden="true" />
-              </span>
-              <h3 className="mt-3 font-heading text-base font-semibold sm:mt-5 sm:text-lg">{title}</h3>
-              <p className="mt-1.5 text-xs leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-6">{text}</p>
-            </div>
-          ))}
-        </div>
-        </div>
-      </section>
-
-      {/* STEPS */}
-      <section className="flex min-h-svh snap-start items-center border-y bg-muted/40">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14 lg:px-8">
           <div>
-            <p className="finance-label">Cómo funciona</p>
-            <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-              Empezás en menos de un minuto.
+            <p className="finance-label">Qué incluye</p>
+            <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
+              Todo lo que necesitás para ordenar tu plata, nada que no.
             </h2>
-            <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Smartphone className="size-4" aria-hidden="true" />
-              Funciona en el navegador del celular y de la compu.
-            </p>
+            <figure className="mt-8 border-l-2 border-primary pl-5 sm:mt-10">
+              <blockquote className="font-heading text-lg leading-snug sm:text-xl">
+                “No ahorres lo que te queda después de gastar; gastá lo que te
+                queda después de ahorrar.”
+              </blockquote>
+              <figcaption className="mt-3 text-sm text-muted-foreground">
+                Warren Buffett
+              </figcaption>
+            </figure>
           </div>
-          <ol className="grid gap-6">
-            {STEPS.map((step, i) => (
-              <li key={step.title} className="flex gap-4">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary font-heading text-sm font-semibold text-primary-foreground">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-heading font-semibold">{step.title}</h3>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">{step.text}</p>
+
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+            {FEATURES.map(({ icon: Icon, title, text, points }) => (
+              <div key={title} className="finance-card rounded-2xl p-5 sm:p-6">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <h3 className="font-heading text-lg font-semibold">{title}</h3>
                 </div>
-              </li>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
+                <ul className="mt-4 hidden gap-2 text-sm sm:grid">
+                  {points.map((point) => (
+                    <li key={point} className="flex items-center gap-2">
+                      <Check className="size-4 shrink-0 text-success" aria-hidden="true" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
       </section>
 

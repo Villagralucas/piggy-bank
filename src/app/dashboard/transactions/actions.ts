@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import type { TransactionType } from "@/lib/types";
 
@@ -24,7 +24,7 @@ export async function createTransaction(formData: FormData) {
   if (!amount || amount <= 0) throw new Error("El monto debe ser mayor a 0");
   if (!occurred_at) throw new Error("Selecciona una fecha");
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.createTransaction({
       account_id,
       category_id,
@@ -59,7 +59,7 @@ export async function createTransaction(formData: FormData) {
 }
 
 export async function deleteTransaction(transactionId: string) {
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.deleteTransaction(transactionId);
     revalidateAll();
     return;
@@ -79,7 +79,7 @@ export async function deleteTransaction(transactionId: string) {
 export async function deleteTransactions(transactionIds: string[]) {
   if (transactionIds.length === 0) return;
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.deleteTransactions(transactionIds);
     revalidateAll();
     return;

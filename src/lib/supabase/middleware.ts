@@ -1,8 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { DEMO_COOKIE, DEMO_MODE } from "@/lib/demo-mode";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback", "/demo"];
 
 export async function updateSession(request: NextRequest) {
   if (DEMO_MODE) {
@@ -40,7 +40,18 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname === "/" ||
     PUBLIC_PATHS.some((path) => request.nextUrl.pathname.startsWith(path));
 
-  if (!user && !isPublicPath) {
+  // A signed-in user never stays in demo mode.
+  if (user && request.cookies.get(DEMO_COOKIE)) {
+    const response = NextResponse.redirect(request.nextUrl.clone());
+    response.cookies.delete(DEMO_COOKIE);
+    return response;
+  }
+
+  const isDemoViewer =
+    request.cookies.get(DEMO_COOKIE)?.value === "1" &&
+    request.nextUrl.pathname.startsWith("/dashboard");
+
+  if (!user && !isPublicPath && !isDemoViewer) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

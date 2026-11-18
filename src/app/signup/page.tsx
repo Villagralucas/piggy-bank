@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthShell } from "@/components/auth-shell";
-import { PiggyBank, ShieldCheck, Sparkles } from "lucide-react";
+import { Eye, PiggyBank, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -108,6 +108,17 @@ export default function SignupPage() {
                 Iniciá sesión
               </Link>
             </p>
+            <div className="mt-6 border-t pt-6">
+              <Button
+                variant="outline"
+                className="h-11 w-full"
+                nativeButton={false}
+                render={<a href="/demo" />}
+              >
+                <Eye className="size-4" aria-hidden="true" />
+                Ver demo sin registrarme
+              </Button>
+            </div>
           </CardContent>
         </Card>
     </AuthShell>

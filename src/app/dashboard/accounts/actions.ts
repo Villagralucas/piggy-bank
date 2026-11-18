@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_MODE } from "@/lib/demo-mode";
+import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import type { AccountType } from "@/lib/types";
 
@@ -20,7 +20,7 @@ export async function createAccount(formData: FormData) {
 
   if (!name) throw new Error("El nombre de la cuenta es obligatorio");
 
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.createAccount({ name, type, currency, initial_balance });
     revalidateAll();
     return;
@@ -46,7 +46,7 @@ export async function createAccount(formData: FormData) {
 }
 
 export async function deleteAccount(accountId: string) {
-  if (DEMO_MODE) {
+  if (await isDemo()) {
     demoStore.deleteAccount(accountId);
     revalidateAll();
     return;
