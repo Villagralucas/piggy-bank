@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createTransaction } from "@/app/dashboard/transactions/actions";
+import { createAccount } from "@/app/dashboard/accounts/actions";
 import { MoneyInput } from "@/components/money-input";
 import type { Account, Category, TransactionType } from "@/lib/types";
 import { Plus } from "lucide-react";
@@ -50,7 +52,7 @@ export function TransactionDialog({
 
   const filteredCategories = useMemo(
     () => categories.filter((c) => c.kind === type),
-    [categories, type]
+    [categories, type],
   );
 
   function handleSubmit(formData: FormData) {
@@ -62,7 +64,27 @@ export function TransactionDialog({
         setOpen(false);
       } catch (err) {
         toast.error(
-          err instanceof Error ? err.message : "Error al registrar el movimiento"
+          err instanceof Error
+            ? err.message
+            : "Error al registrar el movimiento",
+        );
+      }
+    });
+  }
+
+  function createCashAccount() {
+    const data = new FormData();
+    data.set("name", "Efectivo");
+    data.set("type", "cash");
+    data.set("currency", "ARS");
+    data.set("initial_balance", "0");
+    startTransition(async () => {
+      try {
+        await createAccount(data);
+        toast.success('Cuenta "Efectivo" creada');
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "No se pudo crear la cuenta",
         );
       }
     });
@@ -72,107 +94,147 @@ export function TransactionDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size={size} disabled={accounts.length === 0}>
+          <Button size={size}>
             <Plus className="size-4" />
             {triggerLabel}
           </Button>
         }
       />
       <DialogContent>
-        <form action={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Nuevo movimiento</DialogTitle>
-            <DialogDescription>
-              Registra un ingreso o gasto en una de tus cuentas.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 py-4">
-            <Tabs value={type} onValueChange={(v) => setType(v as TransactionType)}>
-              <TabsList className="w-full">
-                <TabsTrigger value="expense" className="flex-1">
-                  Gasto
-                </TabsTrigger>
-                <TabsTrigger value="income" className="flex-1">
-                  Ingreso
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+        {accounts.length === 0 ? (
+          <div className="flex flex-col gap-4">
+            <DialogHeader>
+              <DialogTitle>
+                Primero necesitás dónde guardar la plata
+              </DialogTitle>
+              <DialogDescription>
+                Cada movimiento se anota en una cuenta de dinero, como tu
+                efectivo o tu banco (no es tu usuario). Te creamos una
+                &quot;Efectivo&quot; en pesos para empezar, y después podés
+                sumar más en la sección Cuentas.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2">
+              <Button
+                variant="ghost"
+                nativeButton={false}
+                render={<Link href="/dashboard/accounts" />}
+              >
+                Ir a Cuentas
+              </Button>
+              <Button disabled={pending} onClick={createCashAccount}>
+                {pending ? "Creando..." : 'Crear "Efectivo" y seguir'}
+              </Button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <form action={handleSubmit}>
+            <DialogHeader>
+              <DialogTitle>Nuevo movimiento</DialogTitle>
+              <DialogDescription>
+                Registra un ingreso o gasto en una de tus cuentas.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 py-4">
+              <Tabs
+                value={type}
+                onValueChange={(v) => setType(v as TransactionType)}
+              >
+                <TabsList className="w-full">
+                  <TabsTrigger value="expense" className="flex-1">
+                    Gasto
+                  </TabsTrigger>
+                  <TabsTrigger value="income" className="flex-1">
+                    Ingreso
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="amount">Monto</Label>
-                <MoneyInput id="amount" name="amount" currency={currency} required />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="amount">Monto</Label>
+                  <MoneyInput
+                    id="amount"
+                    name="amount"
+                    currency={currency}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="occurred_at">Fecha</Label>
+                  <Input
+                    id="occurred_at"
+                    name="occurred_at"
+                    type="date"
+                    defaultValue={todayISO()}
+                    required
+                  />
+                </div>
               </div>
+
               <div className="flex flex-col gap-2">
-                <Label htmlFor="occurred_at">Fecha</Label>
-                <Input
-                  id="occurred_at"
-                  name="occurred_at"
-                  type="date"
-                  defaultValue={todayISO()}
+                <Label htmlFor="account_id">Cuenta</Label>
+                <Select
+                  name="account_id"
                   required
+                  value={accountId}
+                  onValueChange={(v) => setAccountId(v ? String(v) : null)}
+                >
+                  <SelectTrigger id="account_id" className="w-full">
+                    <SelectValue placeholder="Selecciona una cuenta">
+                      {(value: string | null) =>
+                        accounts.find((a) => a.id === value)?.name ??
+                        "Selecciona una cuenta"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="category_id">Categoría</Label>
+                <Select name="category_id">
+                  <SelectTrigger id="category_id" className="w-full">
+                    <SelectValue placeholder="Selecciona una categoría">
+                      {(value: string | null) =>
+                        filteredCategories.find((c) => c.id === value)?.name ??
+                        "Selecciona una categoría"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredCategories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="description">Descripción (opcional)</Label>
+                <Input
+                  id="description"
+                  name="description"
+                  placeholder="Ej. Supermercado"
                 />
               </div>
             </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="account_id">Cuenta</Label>
-              <Select
-                name="account_id"
-                required
-                value={accountId}
-                onValueChange={(v) => setAccountId(v ? String(v) : null)}
-              >
-                <SelectTrigger id="account_id" className="w-full">
-                  <SelectValue placeholder="Selecciona una cuenta">
-                    {(value: string | null) =>
-                      accounts.find((a) => a.id === value)?.name ??
-                      "Selecciona una cuenta"
-                    }
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {accounts.map((a) => (
-                    <SelectItem key={a.id} value={a.id}>
-                      {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="category_id">Categoría</Label>
-              <Select name="category_id">
-                <SelectTrigger id="category_id" className="w-full">
-                  <SelectValue placeholder="Selecciona una categoría">
-                    {(value: string | null) =>
-                      filteredCategories.find((c) => c.id === value)?.name ??
-                      "Selecciona una categoría"
-                    }
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredCategories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="description">Descripción (opcional)</Label>
-              <Input id="description" name="description" placeholder="Ej. Supermercado" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={pending}>
-              {pending ? "Guardando..." : "Guardar"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={pending}>
+                {pending ? "Guardando..." : "Guardar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );
