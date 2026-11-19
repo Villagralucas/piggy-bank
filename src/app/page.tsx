@@ -93,7 +93,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-950/70 via-zinc-950/50 to-zinc-950/90 lg:bg-gradient-to-r lg:from-zinc-950/90 lg:via-zinc-950/65 lg:to-zinc-950/30" />
 
-        <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-5 lg:px-8">
+        <header className="flex w-full items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-10">
           <Link href="/" className="flex items-center gap-3">
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
               <PiggyBank className="size-5" aria-hidden="true" />
@@ -231,39 +231,17 @@ export default async function Home() {
           className="-z-20 object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-zinc-950/70" />
-        <div className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 py-16 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16 lg:px-8">
-          <Reveal className="order-2 lg:order-1">
-            <DashboardPreview />
-          </Reveal>
-          <Reveal delay={300} className="order-1 lg:order-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
-              Así se ve por dentro
-            </p>
-            <h2 className="mt-4 font-heading text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-10 px-4 py-16 text-center lg:px-8">
+          <Reveal>
+            <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-6xl">
               Tomá el control de tu mes.
             </h2>
-            <p className="mt-4 max-w-sm text-white/75">
+            <p className="mx-auto mt-4 max-w-md text-white/75">
               Creá tu cuenta gratis y cargá tu primer movimiento hoy.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-              <Button
-                size="lg"
-                className="h-12 px-6 text-base"
-                nativeButton={false}
-                render={<Link href="/signup" />}
-              >
-                Crear cuenta
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 border-white/25 bg-white/5 px-6 text-base text-white hover:bg-white/15 hover:text-white"
-                nativeButton={false}
-                render={<Link href="/login" />}
-              >
-                Iniciar sesión
-              </Button>
-            </div>
+          </Reveal>
+          <Reveal delay={400} className="w-full max-w-4xl text-left">
+            <DashboardPreview />
           </Reveal>
         </div>
         <footer className="border-t border-white/10">
