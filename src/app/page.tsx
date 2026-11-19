@@ -165,21 +165,21 @@ export default async function Home() {
         id="funciones"
         className="flex min-h-svh snap-start items-center"
       >
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14 lg:px-8">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:px-8">
           <div>
             <Reveal>
               <p className="finance-label">Qué incluye</p>
-              <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
+              <h2 className="mt-3 font-heading text-3xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.4rem]">
                 Todo lo que necesitás para ordenar tu plata, nada que no.
               </h2>
             </Reveal>
-            <Reveal delay={250}>
-              <figure className="mt-8 border-l-2 border-primary pl-5 sm:mt-10">
-                <blockquote className="font-heading text-lg leading-snug sm:text-xl">
+            <Reveal delay={500}>
+              <figure className="mt-10 border-l-4 border-primary pl-6 sm:mt-14">
+                <blockquote className="font-heading text-xl leading-snug sm:text-2xl lg:text-[1.75rem]">
                   “No ahorres lo que te queda después de gastar; gastá lo que te
                   queda después de ahorrar.”
                 </blockquote>
-                <figcaption className="mt-3 text-sm text-muted-foreground">
+                <figcaption className="mt-4 text-base text-muted-foreground">
                   Warren Buffett
                 </figcaption>
               </figure>
@@ -188,7 +188,7 @@ export default async function Home() {
 
           <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             {FEATURES.map(({ icon: Icon, title, text, points }, i) => (
-              <Reveal key={title} delay={150 + i * 120} className="h-full">
+              <Reveal key={title} delay={900 + i * 300} className="h-full">
                 <div className="finance-card h-full rounded-2xl p-5 sm:p-6">
                   <div className="flex items-center gap-3">
                     <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
