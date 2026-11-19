@@ -30,7 +30,7 @@ export function AuthShell({
         sizes="100vw"
         className="-z-20 object-cover object-[70%_center]"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-950/55 via-zinc-950/35 to-zinc-950/80 lg:bg-gradient-to-br lg:from-zinc-950/90 lg:via-zinc-950/70 lg:to-indigo-950/60" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-zinc-950/55 via-zinc-950/35 to-zinc-950/80 lg:bg-gradient-to-br lg:from-zinc-950/90 lg:via-zinc-950/70 lg:to-emerald-950/60" />
 
       <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
@@ -49,7 +49,7 @@ export function AuthShell({
           </div>
 
           <div className="mt-12 hidden max-w-xl lg:block">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
               {eyebrow}
             </p>
             <h1 className="mt-4 font-heading text-5xl font-semibold leading-tight tracking-tight">
@@ -63,7 +63,7 @@ export function AuthShell({
               {features.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3">
                   <span className="grid size-8 place-items-center rounded-lg bg-white/10 backdrop-blur">
-                    <Icon className="size-4 text-indigo-300" aria-hidden="true" />
+                    <Icon className="size-4 text-emerald-300" aria-hidden="true" />
                   </span>
                   {text}
                 </li>
