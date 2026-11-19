@@ -102,7 +102,7 @@ export default async function Home() {
           </p>
           <h1 className="mt-6 max-w-3xl font-heading text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
             Tus gastos, tus cuentas y tu ahorro,{" "}
-            <span className="text-indigo-300">claros en un solo lugar.</span>
+            <span className="text-emerald-300">claros en un solo lugar.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-7 text-white/75 sm:text-lg">
             Piggy Bank te muestra cuánto entra, cuánto sale y cuánto te queda.
