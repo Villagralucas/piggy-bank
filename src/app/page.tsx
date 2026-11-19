@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DEMO_MODE } from "@/lib/demo-mode";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Reveal } from "@/components/reveal";
 import heroImage from "../../public/auth-fondo.jpg";
 import ctaImage from "../../public/landing-cta.jpg";
 
@@ -24,25 +25,41 @@ const FEATURES = [
     icon: ReceiptText,
     title: "Movimientos",
     text: "Cargá ingresos y gastos en segundos y encontralos cuando los necesites.",
-    points: ["Categoría, cuenta y fecha", "Filtros por tipo y búsqueda", "Borrado de a uno o en lote"],
+    points: [
+      "Categoría, cuenta y fecha",
+      "Filtros por tipo y búsqueda",
+      "Borrado de a uno o en lote",
+    ],
   },
   {
     icon: Landmark,
     title: "Cuentas",
     text: "Efectivo, banco, tarjeta o ahorro, cada una con su propio saldo.",
-    points: ["Saldo que se actualiza solo", "Saldo inicial al crearla", "Total disponible en el resumen"],
+    points: [
+      "Saldo que se actualiza solo",
+      "Saldo inicial al crearla",
+      "Total disponible en el resumen",
+    ],
   },
   {
     icon: Target,
     title: "Metas de ahorro",
     text: "Ponele nombre y monto a lo que querés lograr y seguí cómo avanza.",
-    points: ["Barra de progreso", "Aportes cuando quieras", "Fecha objetivo opcional"],
+    points: [
+      "Barra de progreso",
+      "Aportes cuando quieras",
+      "Fecha objetivo opcional",
+    ],
   },
   {
     icon: ChartPie,
     title: "Reportes",
     text: "Mirá dónde se va la plata y cómo venís mes a mes.",
-    points: ["Gastos por categoría", "Ingresos vs. gastos, 6 meses", "Gráficos claros y simples"],
+    points: [
+      "Gastos por categoría",
+      "Ingresos vs. gastos, 6 meses",
+      "Gráficos claros y simples",
+    ],
   },
 ];
 
@@ -80,18 +97,23 @@ export default async function Home() {
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
               <PiggyBank className="size-5" aria-hidden="true" />
             </span>
-            <span className="font-heading text-lg font-semibold">Piggy Bank</span>
+            <span className="font-heading text-lg font-semibold">
+              Piggy Bank
+            </span>
           </Link>
           <nav className="flex items-center gap-2">
             <ThemeToggle />
             <Button
               variant="ghost"
               className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex"
-              nativeButton={false} render={<Link href="/login" />}
+              nativeButton={false}
+              render={<Link href="/login" />}
             >
               Iniciar sesión
             </Button>
-            <Button nativeButton={false} render={<Link href="/signup" />}>Crear cuenta</Button>
+            <Button nativeButton={false} render={<Link href="/signup" />}>
+              Crear cuenta
+            </Button>
           </nav>
         </header>
 
@@ -109,7 +131,12 @@ export default async function Home() {
             Sin planillas ni fórmulas rotas, desde la compu o el celular.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button size="lg" className="h-12 px-6 text-base" nativeButton={false} render={<Link href="/signup" />}>
+            <Button
+              size="lg"
+              className="h-12 px-6 text-base"
+              nativeButton={false}
+              render={<Link href="/signup" />}
+            >
               Empezar gratis
               <ArrowRight className="size-4" aria-hidden="true" />
             </Button>
@@ -117,7 +144,8 @@ export default async function Home() {
               size="lg"
               variant="outline"
               className="h-12 border-white/25 bg-white/5 px-6 text-base text-white hover:bg-white/15 hover:text-white"
-              nativeButton={false} render={<Link href="/login" />}
+              nativeButton={false}
+              render={<Link href="/login" />}
             >
               Ya tengo cuenta
             </Button>
@@ -133,43 +161,59 @@ export default async function Home() {
       </section>
 
       {/* FEATURES */}
-      <section id="funciones" className="flex min-h-svh snap-start items-center">
+      <section
+        id="funciones"
+        className="flex min-h-svh snap-start items-center"
+      >
         <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14 lg:px-8">
           <div>
-            <p className="finance-label">Qué incluye</p>
-            <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
-              Todo lo que necesitás para ordenar tu plata, nada que no.
-            </h2>
-            <figure className="mt-8 border-l-2 border-primary pl-5 sm:mt-10">
-              <blockquote className="font-heading text-lg leading-snug sm:text-xl">
-                “No ahorres lo que te queda después de gastar; gastá lo que te
-                queda después de ahorrar.”
-              </blockquote>
-              <figcaption className="mt-3 text-sm text-muted-foreground">
-                Warren Buffett
-              </figcaption>
-            </figure>
+            <Reveal>
+              <p className="finance-label">Qué incluye</p>
+              <h2 className="mt-3 font-heading text-2xl font-semibold tracking-tight sm:text-4xl">
+                Todo lo que necesitás para ordenar tu plata, nada que no.
+              </h2>
+            </Reveal>
+            <Reveal delay={250}>
+              <figure className="mt-8 border-l-2 border-primary pl-5 sm:mt-10">
+                <blockquote className="font-heading text-lg leading-snug sm:text-xl">
+                  “No ahorres lo que te queda después de gastar; gastá lo que te
+                  queda después de ahorrar.”
+                </blockquote>
+                <figcaption className="mt-3 text-sm text-muted-foreground">
+                  Warren Buffett
+                </figcaption>
+              </figure>
+            </Reveal>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-            {FEATURES.map(({ icon: Icon, title, text, points }) => (
-              <div key={title} className="finance-card rounded-2xl p-5 sm:p-6">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="size-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="font-heading text-lg font-semibold">{title}</h3>
+            {FEATURES.map(({ icon: Icon, title, text, points }, i) => (
+              <Reveal key={title} delay={150 + i * 120} className="h-full">
+                <div className="finance-card h-full rounded-2xl p-5 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="font-heading text-lg font-semibold">
+                      {title}
+                    </h3>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    {text}
+                  </p>
+                  <ul className="mt-4 hidden gap-2 text-sm sm:grid">
+                    {points.map((point) => (
+                      <li key={point} className="flex items-center gap-2">
+                        <Check
+                          className="size-4 shrink-0 text-success"
+                          aria-hidden="true"
+                        />
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{text}</p>
-                <ul className="mt-4 hidden gap-2 text-sm sm:grid">
-                  {points.map((point) => (
-                    <li key={point} className="flex items-center gap-2">
-                      <Check className="size-4 shrink-0 text-success" aria-hidden="true" />
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -194,14 +238,20 @@ export default async function Home() {
             Creá tu cuenta gratis y cargá tu primer movimiento hoy.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="h-12 px-6 text-base" nativeButton={false} render={<Link href="/signup" />}>
+            <Button
+              size="lg"
+              className="h-12 px-6 text-base"
+              nativeButton={false}
+              render={<Link href="/signup" />}
+            >
               Crear cuenta
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="h-12 border-white/25 bg-white/5 px-6 text-base text-white hover:bg-white/15 hover:text-white"
-              nativeButton={false} render={<Link href="/login" />}
+              nativeButton={false}
+              render={<Link href="/login" />}
             >
               Iniciar sesión
             </Button>
