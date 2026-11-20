@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { UserMenu } from "@/components/user-menu";
 import { PiggyBank } from "lucide-react";
+import { QuickAddButton } from "@/components/quick-add-button";
+import { ConfirmProvider } from "@/components/confirm-dialog";
 
 
 export default async function DashboardLayout({
@@ -30,6 +32,7 @@ export default async function DashboardLayout({
   }
 
   return (
+    <ConfirmProvider>
     <div className="finance-shell">
       {demo && (
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-b bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground">
@@ -68,8 +71,10 @@ export default async function DashboardLayout({
         </div>
         <DashboardNav variant="mobile" />
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 pt-6 pb-24 md:py-8">{children}</main>
+      <QuickAddButton />
       <Toaster />
     </div>
+    </ConfirmProvider>
   );
 }

@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllTransactions } from "@/lib/queries";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
+import { syncRecurring } from "@/lib/recurring";
 import type { Category, Transaction } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,6 +20,7 @@ const MONTH_LABELS = [
 ];
 
 export default async function ReportsPage() {
+  await syncRecurring();
   let categoriesList: Category[];
   let transactionsList: Transaction[];
 
@@ -30,10 +33,7 @@ export default async function ReportsPage() {
     const supabase = await createClient();
     const [{ data: categories }, { data: transactions }] = await Promise.all([
       supabase.from("categories").select("*"),
-      supabase
-        .from("transactions")
-        .select("*")
-        .order("occurred_at", { ascending: true }),
+      fetchAllTransactions(supabase, { ascending: true }).then((data) => ({ data })),
     ]);
     categoriesList = (categories ?? []) as Category[];
     transactionsList = (transactions ?? []) as Transaction[];

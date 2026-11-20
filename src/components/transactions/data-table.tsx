@@ -18,7 +18,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -35,7 +34,18 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
+import type { Account, Category } from "@/lib/types"
+
+import { useConfirm } from "@/components/confirm-dialog"
+
 import { createColumns, type TransactionRow } from "./columns"
+import {
+  applyFilters,
+  EMPTY_FILTERS,
+  FilterSummary,
+  TransactionFilters,
+  type Filters,
+} from "./transaction-filters"
 import { features } from "./data-table-features"
 
 const COLUMN_LABELS: Record<string, string> = {
@@ -49,23 +59,34 @@ const COLUMN_LABELS: Record<string, string> = {
 const PAGE_SIZES = [10, 20, 30, 50]
 
 export function TransactionsDataTable({
-  data,
+  data: allRows,
+  accounts,
+  categories,
   deleteTransaction,
   deleteTransactions,
 }: {
   data: TransactionRow[]
+  accounts: Account[]
+  categories: Category[]
   deleteTransaction: (id: string) => Promise<void>
   deleteTransactions: (ids: string[]) => Promise<void>
 }) {
+  const [filters, setFilters] = React.useState<Filters>(EMPTY_FILTERS)
+  const data = React.useMemo(() => applyFilters(allRows, filters), [allRows, filters])
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [pending, startTransition] = useTransition()
+  const confirm = useConfirm()
 
   const handleDeleteRow = React.useCallback(
-    (id: string) => {
-      if (!window.confirm("¿Seguro que quieres eliminar este movimiento?")) return
+    async (id: string) => {
+      const ok = await confirm({
+        title: "¿Eliminar este movimiento?",
+        description: "Se descuenta de la cuenta y no se puede deshacer.",
+      })
+      if (!ok) return
       startTransition(async () => {
         try {
           await deleteTransaction(id)
@@ -75,7 +96,7 @@ export function TransactionsDataTable({
         }
       })
     },
-    [deleteTransaction]
+    [deleteTransaction, confirm]
   )
 
   const columns = React.useMemo(
@@ -97,9 +118,14 @@ export function TransactionsDataTable({
 
   const selectedIds = table.getFilteredSelectedRowModel().rows.map((row) => row.original.id)
 
-  function handleDeleteSelected() {
-    if (!window.confirm(`¿Eliminar ${selectedIds.length} movimiento(s) seleccionados?`))
-      return
+  async function handleDeleteSelected() {
+    const n = selectedIds.length
+    const ok = await confirm({
+      title: `¿Eliminar ${n} movimiento${n === 1 ? "" : "s"}?`,
+      description: "Se descuentan de sus cuentas y no se puede deshacer.",
+      confirmLabel: `Eliminar ${n}`,
+    })
+    if (!ok) return
     startTransition(async () => {
       try {
         await deleteTransactions(selectedIds)
@@ -113,15 +139,18 @@ export function TransactionsDataTable({
 
   return (
     <div className="flex flex-col gap-3">
+      <TransactionFilters
+        filters={filters}
+        onChange={(next) => {
+          setFilters(next)
+          table.setPageIndex(0)
+          table.setRowSelection({})
+        }}
+        accounts={accounts}
+        categories={categories}
+      />
+      <FilterSummary rows={data} />
       <div className="flex flex-wrap items-center gap-2">
-        <Input
-          placeholder="Buscar por descripción..."
-          value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("description")?.setFilterValue(event.target.value)
-          }
-          className="max-w-xs"
-        />
         {selectedIds.length > 0 && (
           <div className="flex items-center gap-2 rounded-lg border bg-muted/40 py-1 pr-1 pl-2.5 text-sm">
             <span className="text-muted-foreground">
