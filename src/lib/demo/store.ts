@@ -1,4 +1,4 @@
-import type { Account, Category, SavingsGoal, Transaction } from "@/lib/types";
+import type { Account, Category, RecurringTransaction, SavingsGoal, Transaction } from "@/lib/types";
 
 const DEMO_USER_ID = "demo-user";
 
@@ -115,6 +115,15 @@ const demoGoals: SavingsGoal[] = [
   { id: uid(), user_id: DEMO_USER_ID, name: "Vacaciones", target_amount: 800000, current_amount: 200000, target_date: daysAgo(-90), created_at: now },
 ];
 
+const thisMonth = new Date().toISOString().slice(0, 7);
+
+const demoRecurring: RecurringTransaction[] = [
+  { id: uid(), user_id: DEMO_USER_ID, account_id: accountId("Cuenta corriente"), category_id: categoryId("Salario"), type: "income", amount: 1550000, description: "Sueldo", day_of_month: 1, active: true, last_generated_month: thisMonth, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, account_id: accountId("Cuenta corriente"), category_id: categoryId("Vivienda"), type: "expense", amount: 450000, description: "Alquiler", day_of_month: 1, active: true, last_generated_month: thisMonth, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, account_id: accountId("Cuenta corriente"), category_id: categoryId("Servicios"), type: "expense", amount: 40000, description: "Internet", day_of_month: 10, active: true, last_generated_month: thisMonth, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, account_id: accountId("Efectivo"), category_id: categoryId("Entretenimiento"), type: "expense", amount: 20000, description: "Streaming", day_of_month: 15, active: false, last_generated_month: thisMonth, created_at: now },
+];
+
 let demoMonthlyBudget: number | null = 1500000;
 
 export const demoStore = {
@@ -149,9 +158,15 @@ export const demoStore = {
     for (let i = demoTransactions.length - 1; i >= 0; i--) {
       if (demoTransactions[i].account_id === accountId) demoTransactions.splice(i, 1);
     }
+    for (let i = demoRecurring.length - 1; i >= 0; i--) {
+      if (demoRecurring[i].account_id === accountId) demoRecurring.splice(i, 1);
+    }
   },
 
-  createTransaction(data: Pick<Transaction, "account_id" | "category_id" | "type" | "amount" | "description" | "occurred_at">) {
+  createTransaction(
+    data: Pick<Transaction, "account_id" | "category_id" | "type" | "amount" | "description" | "occurred_at"> &
+      Partial<Pick<Transaction, "recurring_id">>
+  ) {
     const transaction: Transaction = { id: uid(), user_id: DEMO_USER_ID, created_at: new Date().toISOString(), ...data };
     demoTransactions.push(transaction);
     return transaction;
@@ -165,6 +180,25 @@ export const demoStore = {
     for (let i = demoTransactions.length - 1; i >= 0; i--) {
       if (ids.has(demoTransactions[i].id)) demoTransactions.splice(i, 1);
     }
+  },
+
+  getRecurring(): RecurringTransaction[] {
+    return demoRecurring;
+  },
+  createRecurring(
+    data: Pick<RecurringTransaction, "account_id" | "category_id" | "type" | "amount" | "description" | "day_of_month" | "last_generated_month">
+  ) {
+    const rule: RecurringTransaction = { id: uid(), user_id: DEMO_USER_ID, created_at: new Date().toISOString(), active: true, ...data };
+    demoRecurring.push(rule);
+    return rule;
+  },
+  updateRecurring(ruleId: string, data: Partial<Pick<RecurringTransaction, "active" | "last_generated_month">>) {
+    const rule = demoRecurring.find((r) => r.id === ruleId);
+    if (rule) Object.assign(rule, data);
+  },
+  deleteRecurring(ruleId: string) {
+    const idx = demoRecurring.findIndex((r) => r.id === ruleId);
+    if (idx >= 0) demoRecurring.splice(idx, 1);
   },
 
   createGoal(data: Pick<SavingsGoal, "name" | "target_amount" | "target_date">) {

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS: { href: Route; label: string }[] = [
   { href: "/dashboard", label: "Resumen" },
   { href: "/dashboard/transactions", label: "Movimientos" },
+  { href: "/dashboard/recurring", label: "Fijos" },
   { href: "/dashboard/accounts", label: "Cuentas" },
   { href: "/dashboard/goals", label: "Metas de ahorro" },
   { href: "/dashboard/reports", label: "Reportes" },

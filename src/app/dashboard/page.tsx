@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
+import { syncRecurring } from "@/lib/recurring";
 import { getMonthlyBudget } from "@/lib/settings";
 import type { Account, Category, SavingsGoal, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
@@ -41,6 +42,7 @@ function percentChange(current: number, previous: number) {
 }
 
 export default async function DashboardPage() {
+  await syncRecurring();
   let accountsList: Account[];
   let transactionsList: Transaction[];
   let categoriesList: Category[];

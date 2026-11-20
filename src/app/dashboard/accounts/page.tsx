@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
+import { syncRecurring } from "@/lib/recurring";
 import type { Account, AccountType, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
 import { formatCurrency } from "@/lib/utils";
@@ -18,6 +19,7 @@ const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
 };
 
 export default async function AccountsPage() {
+  await syncRecurring();
   let accountsList: Account[];
   let transactionsList: Transaction[];
 

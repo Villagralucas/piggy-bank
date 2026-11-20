@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
+import { syncRecurring } from "@/lib/recurring";
 import type { Category, Transaction } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,6 +19,7 @@ const MONTH_LABELS = [
 ];
 
 export default async function ReportsPage() {
+  await syncRecurring();
   let categoriesList: Category[];
   let transactionsList: Transaction[];
 

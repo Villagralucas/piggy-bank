@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
+import { syncRecurring } from "@/lib/recurring";
 import type { Account, Category, Transaction } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransactionDialog } from "@/components/transactions/transaction-dialog";
@@ -12,6 +13,7 @@ import {
 } from "@/app/dashboard/transactions/actions";
 
 export default async function TransactionsPage() {
+  await syncRecurring();
   let accountsList: Account[];
   let categoriesList: Category[];
   let transactionsList: Transaction[];
