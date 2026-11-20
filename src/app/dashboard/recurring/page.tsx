@@ -7,6 +7,7 @@ import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecurringDialog } from "@/components/recurring/recurring-dialog";
 import { RecurringActions } from "@/components/recurring/recurring-actions";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 /** Next date a rule will load: this month if its day hasn't been generated yet, else next month. */
 function nextDate(rule: RecurringTransaction, today: Date) {
@@ -120,9 +121,13 @@ export default async function RecurringPage() {
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <span
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: c?.color ?? "#94a3b8" }}
-                      />
+                        className={cn(
+                          "grid size-8 shrink-0 place-items-center rounded-full",
+                          rule.type === "income" ? "bg-primary/12 text-success" : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {rule.type === "income" ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
+                      </span>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">{rule.description}</p>
                         <p className="text-xs text-muted-foreground">

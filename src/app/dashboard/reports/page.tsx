@@ -51,7 +51,7 @@ export default async function ReportsPage() {
   for (const t of monthExpenses) {
     const category = t.category_id ? categoryMap.get(t.category_id) : undefined;
     const key = category?.name ?? "Sin categoría";
-    const color = category?.color ?? "#94a3b8";
+    const color = "";
     const existing = spendingByCategory.get(key);
     if (existing) {
       existing.value += t.amount;

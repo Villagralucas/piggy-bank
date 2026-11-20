@@ -52,11 +52,11 @@ export function TrendCard({ data }: { data: TrendPoint[] }) {
         <AreaChart data={visible} margin={{ left: 0, right: 8, top: 8 }}>
           <defs>
             <linearGradient id="fillIngresos" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--success)" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="var(--success)" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="fillGastos" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--destructive)" stopOpacity={0.25} />
+              <stop offset="0%" stopColor="var(--chart-2)" stopOpacity={0.2} />
               <stop offset="100%" stopColor="var(--destructive)" stopOpacity={0} />
             </linearGradient>
           </defs>
@@ -81,14 +81,14 @@ export function TrendCard({ data }: { data: TrendPoint[] }) {
           <Area
             type="monotone"
             dataKey="Ingresos"
-            stroke="var(--success)"
+            stroke="var(--primary)"
             strokeWidth={2}
             fill="url(#fillIngresos)"
           />
           <Area
             type="monotone"
             dataKey="Gastos"
-            stroke="var(--destructive)"
+            stroke="var(--chart-2)"
             strokeWidth={2}
             fill="url(#fillGastos)"
           />
@@ -96,10 +96,10 @@ export function TrendCard({ data }: { data: TrendPoint[] }) {
       </ResponsiveContainer>
       <div className="flex gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-success" /> Ingresos
+          <span className="size-2 rounded-full bg-primary" /> Ingresos
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-destructive" /> Gastos
+          <span className="size-2 rounded-full bg-chart-2" /> Gastos
         </span>
       </div>
     </div>
