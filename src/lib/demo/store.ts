@@ -33,6 +33,7 @@ function categoryId(name: string) {
 const demoAccounts: Account[] = [
   { id: uid(), user_id: DEMO_USER_ID, name: "Cuenta corriente", type: "bank", currency: "ARS", initial_balance: 1200000, created_at: now },
   { id: uid(), user_id: DEMO_USER_ID, name: "Efectivo", type: "cash", currency: "ARS", initial_balance: 80000, created_at: now },
+  { id: uid(), user_id: DEMO_USER_ID, name: "Ahorro en dólares", type: "savings", currency: "USD", initial_balance: 1200, created_at: now },
 ];
 
 function accountId(name: string) {

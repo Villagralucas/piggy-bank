@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllTransactions } from "@/lib/queries";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import { syncRecurring } from "@/lib/recurring";
 import { getMonthlyBudget } from "@/lib/settings";
+import { getDollarRates, toPesos } from "@/lib/dollar";
+import { DollarQuotes } from "@/components/dollar/dollar-quotes";
 import type { Account, Category, SavingsGoal, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
@@ -58,7 +61,7 @@ export default async function DashboardPage() {
     const [{ data: accounts }, { data: transactions }, { data: categories }, { data: goals }] =
       await Promise.all([
         supabase.from("accounts").select("*").order("name", { ascending: true }),
-        supabase.from("transactions").select("*").order("occurred_at", { ascending: false }),
+        fetchAllTransactions(supabase).then((data) => ({ data })),
         supabase.from("categories").select("*").order("name", { ascending: true }),
         supabase.from("savings_goals").select("*"),
       ]);
@@ -67,7 +70,16 @@ export default async function DashboardPage() {
     categoriesList = (categories ?? []) as Category[];
     goalsList = (goals ?? []) as SavingsGoal[];
   }
-  const budget = await getMonthlyBudget();
+  const [budget, rates] = await Promise.all([getMonthlyBudget(), getDollarRates()]);
+
+  // Everything on this page is in pesos: movements of USD accounts are
+  // converted at the chosen dollar (or left out if there's no quote today).
+  const currencyOf = new Map(accountsList.map((a) => [a.id, a.currency]));
+  const allTransactions = transactionsList;
+  transactionsList = allTransactions
+    .filter((t) => rates || currencyOf.get(t.account_id) !== "USD")
+    .map((t) => ({ ...t, amount: toPesos(Number(t.amount), currencyOf.get(t.account_id) ?? "ARS", rates) }));
+  const hasUsd = accountsList.some((a) => a.currency === "USD");
 
   const now = new Date();
   const thisKey = monthKeyOf(now);
@@ -81,10 +93,9 @@ export default async function DashboardPage() {
   const incomeChange = percentChange(monthIncome, sumBy(prevMonth, "income"));
   const expenseChange = percentChange(monthExpense, sumBy(prevMonth, "expense"));
 
-  const totalAvailable = accountsList.reduce(
-    (sum, acc) => sum + accountBalance(acc, transactionsList),
-    0
-  );
+  const totalAvailable = accountsList
+    .filter((acc) => rates || acc.currency !== "USD")
+    .reduce((sum, acc) => sum + toPesos(accountBalance(acc, allTransactions), acc.currency, rates), 0);
   const totalSaved = goalsList.reduce((s, g) => s + Number(g.current_amount), 0);
   const totalGoalTarget = goalsList.reduce((s, g) => s + Number(g.target_amount), 0);
 
@@ -116,7 +127,7 @@ export default async function DashboardPage() {
     });
   }
 
-  const recentTransactions = [...transactionsList]
+  const recentTransactions = [...allTransactions]
     .sort((a, b) => b.occurred_at.localeCompare(a.occurred_at))
     .slice(0, 6);
 
@@ -131,14 +142,18 @@ export default async function DashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Disponible entre todas tus cuentas
+            {hasUsd && rates && ` · dólares al ${rates.selected.kind} (${formatCurrency(rates.selected.buy)})`}
           </p>
         </div>
-        <TransactionDialog
-          accounts={accountsList}
-          categories={categoriesList}
-          triggerLabel="Agregar movimiento"
-          size="lg"
-        />
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-end">
+          {rates && <DollarQuotes rates={rates} className="sm:min-w-[22rem]" />}
+          <TransactionDialog
+            accounts={accountsList}
+            categories={categoriesList}
+            triggerLabel="Agregar movimiento"
+            size="lg"
+          />
+        </div>
       </div>
 
       {/* Stat cards */}
@@ -308,7 +323,7 @@ export default async function DashboardPage() {
                       )}
                     >
                       {t.type === "income" ? "+" : "-"}
-                      {formatCurrency(Number(t.amount))}
+                      {formatCurrency(Number(t.amount), currencyOf.get(t.account_id))}
                     </p>
                   </div>
                 );

@@ -38,3 +38,15 @@ export async function setMonthlyBudget(amount: number | null) {
 
   revalidatePath("/dashboard");
 }
+
+export async function setDollarKind(kind: "blue" | "oficial") {
+  const { cookies } = await import("next/headers");
+  const { DOLLAR_COOKIE } = await import("@/lib/dollar");
+  const store = await cookies();
+  store.set(DOLLAR_COOKIE, kind === "oficial" ? "oficial" : "blue", {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+  revalidatePath("/dashboard", "layout");
+}

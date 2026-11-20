@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllTransactions } from "@/lib/queries";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import { syncRecurring } from "@/lib/recurring";
@@ -30,11 +31,7 @@ export default async function TransactionsPage() {
       await Promise.all([
         supabase.from("accounts").select("*").order("name"),
         supabase.from("categories").select("*").order("name"),
-        supabase
-          .from("transactions")
-          .select("*")
-          .order("occurred_at", { ascending: false })
-          .limit(300),
+        fetchAllTransactions(supabase).then((data) => ({ data })),
       ]);
     accountsList = (accounts ?? []) as Account[];
     categoriesList = (categories ?? []) as Category[];

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllTransactions } from "@/lib/queries";
 import { isDemo } from "@/lib/demo-mode";
 import { demoStore } from "@/lib/demo/store";
 import { syncRecurring } from "@/lib/recurring";
@@ -32,10 +33,7 @@ export default async function ReportsPage() {
     const supabase = await createClient();
     const [{ data: categories }, { data: transactions }] = await Promise.all([
       supabase.from("categories").select("*"),
-      supabase
-        .from("transactions")
-        .select("*")
-        .order("occurred_at", { ascending: true }),
+      fetchAllTransactions(supabase, { ascending: true }).then((data) => ({ data })),
     ]);
     categoriesList = (categories ?? []) as Category[];
     transactionsList = (transactions ?? []) as Transaction[];
