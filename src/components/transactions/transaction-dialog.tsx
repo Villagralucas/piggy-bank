@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -28,9 +28,26 @@ import { createAccount } from "@/app/dashboard/accounts/actions";
 import { MoneyInput } from "@/components/money-input";
 import type { Account, Category, TransactionType } from "@/lib/types";
 import { Plus } from "lucide-react";
+import { QUICK_ADD_EVENT } from "@/components/quick-add-button";
 
+const LAST_ACCOUNT_KEY = "pb:last-account";
+
+function readLastAccount() {
+  try {
+    return localStorage.getItem(LAST_ACCOUNT_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function subscribeNoop() {
+  return () => {};
+}
+
+/** Today in the user's local time (toISOString would give tomorrow late at night in Argentina). */
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 export function TransactionDialog({
@@ -38,16 +55,43 @@ export function TransactionDialog({
   categories,
   triggerLabel = "Nuevo movimiento",
   size = "sm",
+  defaultOpen = false,
+  defaultType = "expense",
+  listenQuickAdd = false,
 }: {
   accounts: Account[];
   categories: Category[];
   triggerLabel?: string;
   size?: "sm" | "default" | "lg";
+  /** Open right away, e.g. from the app's "Cargar gasto" shortcut. */
+  defaultOpen?: boolean;
+  defaultType?: TransactionType;
+  /** Open when the floating "+" button is tapped (only one dialog per page should). */
+  listenQuickAdd?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [pending, startTransition] = useTransition();
-  const [type, setType] = useState<TransactionType>("expense");
-  const [accountId, setAccountId] = useState<string | null>(null);
+  const [type, setType] = useState<TransactionType>(defaultType);
+
+  // Drop ?nuevo=… from the URL so a reload doesn't open the form again, and
+  // let the floating "+" button open this form while already on the page.
+  useEffect(() => {
+    if (!defaultOpen && !listenQuickAdd) return;
+    if (defaultOpen) window.history.replaceState(null, "", window.location.pathname);
+    const openExpense = () => {
+      setType("expense");
+      setOpen(true);
+    };
+    window.addEventListener(QUICK_ADD_EVENT, openExpense);
+    return () => window.removeEventListener(QUICK_ADD_EVENT, openExpense);
+  }, [defaultOpen, listenQuickAdd]);
+  const [chosenAccountId, setAccountId] = useState<string | null>(null);
+  // Until the user picks one, start with the account used last time, so a
+  // quick expense is just amount + save.
+  const lastAccountId = useSyncExternalStore(subscribeNoop, readLastAccount, () => null);
+  const accountId =
+    chosenAccountId ??
+    (accounts.some((a) => a.id === lastAccountId) ? lastAccountId : (accounts[0]?.id ?? null));
   const currency = accounts.find((a) => a.id === accountId)?.currency ?? "ARS";
 
   const filteredCategories = useMemo(
@@ -60,6 +104,9 @@ export function TransactionDialog({
     startTransition(async () => {
       try {
         await createTransaction(formData);
+        try {
+          localStorage.setItem(LAST_ACCOUNT_KEY, String(formData.get("account_id")));
+        } catch {}
         toast.success("Movimiento registrado");
         setOpen(false);
       } catch (err) {

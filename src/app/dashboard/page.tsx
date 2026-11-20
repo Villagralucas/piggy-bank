@@ -44,7 +44,8 @@ function percentChange(current: number, previous: number) {
   return Math.round(((current - previous) / previous) * 100);
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
+  const { nuevo } = await searchParams;
   await syncRecurring();
   let accountsList: Account[];
   let transactionsList: Transaction[];
@@ -152,6 +153,9 @@ export default async function DashboardPage() {
             categories={categoriesList}
             triggerLabel="Agregar movimiento"
             size="lg"
+            defaultOpen={nuevo === "gasto" || nuevo === "ingreso"}
+            defaultType={nuevo === "ingreso" ? "income" : "expense"}
+            listenQuickAdd
           />
         </div>
       </div>
