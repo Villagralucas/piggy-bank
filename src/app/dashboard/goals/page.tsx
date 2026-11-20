@@ -60,7 +60,12 @@ export default async function GoalsPage() {
                         </p>
                       )}
                     </div>
-                    <DeleteButton id={goal.id} action={deleteGoal} />
+                    <DeleteButton
+                      id={goal.id}
+                      action={deleteGoal}
+                      title={`¿Eliminar la meta "${goal.name}"?`}
+                      description="Se pierde lo que llevás anotado en esta meta. No se puede deshacer."
+                    />
                   </div>
                   <Progress value={pct} />
                   <div className="flex items-center justify-between text-sm">

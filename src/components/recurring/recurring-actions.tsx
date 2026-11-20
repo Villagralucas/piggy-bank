@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import { Pause, Play, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteRecurring, setRecurringActive } from "@/app/dashboard/recurring/actions";
+import { useConfirm } from "@/components/confirm-dialog";
 
 export function RecurringActions({ id, active }: { id: string; active: boolean }) {
   const [pending, startTransition] = useTransition();
+  const confirm = useConfirm();
 
   function toggle() {
     startTransition(async () => {
@@ -20,8 +22,12 @@ export function RecurringActions({ id, active }: { id: string; active: boolean }
     });
   }
 
-  function remove() {
-    if (!window.confirm("¿Eliminar este fijo? Los movimientos que ya se cargaron quedan.")) return;
+  async function remove() {
+    const ok = await confirm({
+      title: "¿Eliminar este fijo?",
+      description: "Deja de cargarse cada mes. Los movimientos que ya se cargaron quedan.",
+    });
+    if (!ok) return;
     startTransition(async () => {
       try {
         await deleteRecurring(id);

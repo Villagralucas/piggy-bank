@@ -36,6 +36,8 @@ import {
 
 import type { Account, Category } from "@/lib/types"
 
+import { useConfirm } from "@/components/confirm-dialog"
+
 import { createColumns, type TransactionRow } from "./columns"
 import {
   applyFilters,
@@ -76,10 +78,15 @@ export function TransactionsDataTable({
   const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [pending, startTransition] = useTransition()
+  const confirm = useConfirm()
 
   const handleDeleteRow = React.useCallback(
-    (id: string) => {
-      if (!window.confirm("¿Seguro que quieres eliminar este movimiento?")) return
+    async (id: string) => {
+      const ok = await confirm({
+        title: "¿Eliminar este movimiento?",
+        description: "Se descuenta de la cuenta y no se puede deshacer.",
+      })
+      if (!ok) return
       startTransition(async () => {
         try {
           await deleteTransaction(id)
@@ -89,7 +96,7 @@ export function TransactionsDataTable({
         }
       })
     },
-    [deleteTransaction]
+    [deleteTransaction, confirm]
   )
 
   const columns = React.useMemo(
@@ -111,9 +118,14 @@ export function TransactionsDataTable({
 
   const selectedIds = table.getFilteredSelectedRowModel().rows.map((row) => row.original.id)
 
-  function handleDeleteSelected() {
-    if (!window.confirm(`¿Eliminar ${selectedIds.length} movimiento(s) seleccionados?`))
-      return
+  async function handleDeleteSelected() {
+    const n = selectedIds.length
+    const ok = await confirm({
+      title: `¿Eliminar ${n} movimiento${n === 1 ? "" : "s"}?`,
+      description: "Se descuentan de sus cuentas y no se puede deshacer.",
+      confirmLabel: `Eliminar ${n}`,
+    })
+    if (!ok) return
     startTransition(async () => {
       try {
         await deleteTransactions(selectedIds)

@@ -98,7 +98,8 @@ export default async function AccountsPage() {
                   <DeleteButton
                     id={account.id}
                     action={deleteAccount}
-                    confirmMessage="¿Seguro que quieres eliminar esta cuenta? También se eliminarán sus movimientos."
+                    title={`¿Eliminar "${account.name}"?`}
+                    description="También se borran todos sus movimientos. No se puede deshacer."
                   />
                 </div>
                 <div>
