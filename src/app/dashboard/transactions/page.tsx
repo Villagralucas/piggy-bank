@@ -45,6 +45,7 @@ export default async function TransactionsPage() {
   const rows: TransactionRow[] = transactionsList.map((t) => ({
     ...t,
     accountName: accountMap.get(t.account_id)?.name ?? "—",
+    currency: accountMap.get(t.account_id)?.currency ?? "ARS",
     category: t.category_id ? categoryMap.get(t.category_id) : undefined,
   }));
 
@@ -70,6 +71,8 @@ export default async function TransactionsPage() {
         ) : (
           <TransactionsDataTable
             data={rows}
+            accounts={accountsList}
+            categories={categoriesList}
             deleteTransaction={deleteTransaction}
             deleteTransactions={deleteTransactions}
           />

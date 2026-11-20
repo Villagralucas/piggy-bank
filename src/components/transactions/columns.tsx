@@ -20,6 +20,7 @@ import type { TransactionsTableFeatures } from "./data-table-features"
 
 export type TransactionRow = Transaction & {
   accountName: string
+  currency: string
   category?: Category
 }
 
@@ -131,7 +132,7 @@ export function createColumns({
           )}
         >
           {row.original.type === "income" ? "+" : "-"}
-          {formatCurrency(row.original.amount)}
+          {formatCurrency(row.original.amount, row.original.currency)}
         </div>
       ),
       sortFn: "basic",
