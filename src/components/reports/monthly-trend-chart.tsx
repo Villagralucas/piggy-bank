@@ -27,8 +27,8 @@ export function MonthlyTrendChart({ data }: { data: MonthlyPoint[] }) {
         <YAxis fontSize={12} width={70} tickFormatter={(v) => formatCurrency(v)} />
         <Tooltip formatter={(value) => formatCurrency(Number(value))} />
         <Legend />
-        <Bar dataKey="Ingresos" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="Gastos" fill="var(--destructive)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="Ingresos" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="Gastos" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

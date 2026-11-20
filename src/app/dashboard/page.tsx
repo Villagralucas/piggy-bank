@@ -8,6 +8,7 @@ import { getMonthlyBudget } from "@/lib/settings";
 import { getDollarRates, toPesos } from "@/lib/dollar";
 import { ALERT_THRESHOLD, categoryBudgetStatus } from "@/lib/budget-alerts";
 import { CategoryBudgetsDialog } from "@/components/dashboard/category-budgets-dialog";
+import { categoryShade } from "@/lib/palette";
 import { DollarQuotes } from "@/components/dollar/dollar-quotes";
 import type { Account, Category, SavingsGoal, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
@@ -121,7 +122,9 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     entry.value += Number(t.amount);
     byCategory.set(key, entry);
   }
-  const categoryRanking = [...byCategory.values()].sort((a, b) => b.value - a.value);
+  const categoryRanking = [...byCategory.values()]
+    .sort((a, b) => b.value - a.value)
+    .map((c, i, all) => ({ ...c, color: categoryShade(i, all.length) }));
   const topCategory = categoryRanking[0]?.value ?? 0;
 
   // Budget alerts: categories at 80%+ of their limit, and the overall budget.
@@ -182,17 +185,17 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
       {/* Budget alerts */}
       {(alerts.length > 0 || (budget && monthExpense / budget >= ALERT_THRESHOLD)) && (
-        <div className="flex flex-col gap-2 rounded-2xl border border-chart-4/40 bg-chart-4/10 p-4">
+        <div className="finance-card flex flex-col gap-2 rounded-2xl border p-4">
           <p className="flex items-center gap-2 text-sm font-semibold">
-            <TriangleAlert className="size-4 text-chart-4" />
+            <TriangleAlert className="size-4 text-warning" />
             Ojo con el presupuesto
           </p>
           <ul className="flex flex-col gap-1.5 text-sm">
             {budget !== null && budget > 0 && monthExpense / budget >= ALERT_THRESHOLD && (
-              <AlertRow name="Total del mes" color="var(--primary)" ratio={monthExpense / budget} spent={monthExpense} limit={budget} />
+              <AlertRow name="Total del mes" ratio={monthExpense / budget} spent={monthExpense} limit={budget} />
             )}
             {alerts.map((a) => (
-              <AlertRow key={a.id} name={a.name} color={a.color} ratio={a.ratio} spent={a.spent} limit={a.budget} />
+              <AlertRow key={a.id} name={a.name} ratio={a.ratio} spent={a.spent} limit={a.budget} />
             ))}
           </ul>
         </div>
@@ -246,7 +249,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
               <div
                 className={cn(
                   "h-full rounded-full transition-all",
-                  budgetUsed >= 100 ? "bg-destructive" : budgetUsed >= 80 ? "bg-chart-4" : "bg-success"
+                  budgetUsed >= 100 ? "bg-destructive" : budgetUsed >= 80 ? "bg-warning" : "bg-primary"
                 )}
                 style={{ width: `${budgetUsed}%` }}
               />
@@ -296,7 +299,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                   <li key={c.name}>
                     <div className="flex items-center justify-between gap-3 text-sm">
                       <span className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+                        <span className="size-2 rounded-full" style={{ backgroundColor: c.color }} />
                         {c.name}
                       </span>
                       <span className="font-medium tabular-nums">{formatCurrency(c.value)}</span>
@@ -305,7 +308,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                       <div
                         className={cn(
                           "h-full rounded-full",
-                          c.budget && (c.value >= c.budget ? "bg-destructive" : c.value >= c.budget * ALERT_THRESHOLD ? "bg-chart-4" : "")
+                          c.budget && (c.value >= c.budget ? "bg-destructive" : c.value >= c.budget * ALERT_THRESHOLD ? "bg-warning" : "")
                         )}
                         style={{
                           width: `${Math.max(4, Math.min(100, Math.round((c.value / (c.budget ?? topCategory)) * 100)))}%`,
@@ -358,9 +361,13 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                   <div key={t.id} className="flex items-center justify-between gap-4 py-3.5">
                     <div className="flex items-center gap-3">
                       <span
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: c?.color ?? "#94a3b8" }}
-                      />
+                        className={cn(
+                          "grid size-8 shrink-0 place-items-center rounded-full",
+                          t.type === "income" ? "bg-primary/12 text-success" : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {t.type === "income" ? <ArrowUpRight className="size-4" /> : <ArrowDownRight className="size-4" />}
+                      </span>
                       <div>
                         <p className="text-sm font-medium">{t.description || "Sin descripción"}</p>
                         <p className="text-xs text-muted-foreground">
@@ -448,13 +455,11 @@ function Change({ value, goodWhenUp }: { value: number | null; goodWhenUp: boole
 
 function AlertRow({
   name,
-  color,
   ratio,
   spent,
   limit,
 }: {
   name: string;
-  color: string;
   ratio: number;
   spent: number;
   limit: number;
@@ -463,9 +468,8 @@ function AlertRow({
   return (
     <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
       <span className="flex items-center gap-2">
-        <span className="size-2.5 rounded-full" style={{ backgroundColor: color }} />
         <span className="font-medium">{name}</span>
-        <span className={over ? "text-destructive" : "text-chart-4"}>
+        <span className={over ? "text-destructive" : "text-warning"}>
           {over ? `te pasaste (${Math.floor(ratio * 100)}%)` : `${Math.floor(ratio * 100)}% usado`}
         </span>
       </span>

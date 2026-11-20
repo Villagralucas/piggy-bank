@@ -109,10 +109,7 @@ export function createColumns({
         return category ? (
           <Badge
             variant="secondary"
-            style={{
-              backgroundColor: `${category.color}20`,
-              color: category.color,
-            }}
+            className="font-normal text-muted-foreground"
           >
             {category.name}
           </Badge>

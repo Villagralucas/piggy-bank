@@ -73,7 +73,6 @@ export function CategoryBudgetsDialog({
               <div key={c.id} className="grid grid-cols-[1fr_9.5rem] items-center gap-3">
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 text-sm font-medium">
-                    <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: c.color }} />
                     <span className="truncate">{c.name}</span>
                   </p>
                   <p className="text-xs text-muted-foreground">

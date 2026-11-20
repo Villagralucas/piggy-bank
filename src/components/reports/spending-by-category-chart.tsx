@@ -2,6 +2,7 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { formatCurrency } from "@/lib/utils";
+import { categoryOpacity, categoryShade } from "@/lib/palette";
 
 export interface CategorySlice {
   name: string;
@@ -9,7 +10,12 @@ export interface CategorySlice {
   color: string;
 }
 
-export function SpendingByCategoryChart({ data }: { data: CategorySlice[] }) {
+export function SpendingByCategoryChart({ data: raw }: { data: CategorySlice[] }) {
+  // Biggest category in the full accent, the rest in lighter shades of it.
+  const data = raw
+    .slice()
+    .sort((a, b) => b.value - a.value)
+    .map((d, i, all) => ({ ...d, color: categoryShade(i, all.length), opacity: categoryOpacity(i, all.length) }));
   if (data.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -29,9 +35,10 @@ export function SpendingByCategoryChart({ data }: { data: CategorySlice[] }) {
             innerRadius={55}
             outerRadius={90}
             paddingAngle={2}
+            stroke="var(--card)"
           >
             {data.map((entry) => (
-              <Cell key={entry.name} fill={entry.color} />
+              <Cell key={entry.name} fill="var(--primary)" fillOpacity={entry.opacity} />
             ))}
           </Pie>
           <Tooltip formatter={(value) => formatCurrency(Number(value))} />
