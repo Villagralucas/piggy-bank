@@ -6,6 +6,7 @@ import { syncRecurring } from "@/lib/recurring";
 import type { Account, Category, Transaction } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransactionDialog } from "@/components/transactions/transaction-dialog";
+import { BackupButtons } from "@/components/backup/backup-buttons";
 import { TransactionsDataTable } from "@/components/transactions/data-table";
 import type { TransactionRow } from "@/components/transactions/columns";
 import {
@@ -49,9 +50,12 @@ export default async function TransactionsPage() {
 
   return (
     <Card className="finance-card">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
         <CardTitle className="font-heading text-xl">Movimientos</CardTitle>
-        <TransactionDialog accounts={accountsList} categories={categoriesList} />
+        <div className="flex flex-wrap items-center gap-2">
+          <BackupButtons />
+          <TransactionDialog accounts={accountsList} categories={categoriesList} />
+        </div>
       </CardHeader>
       <CardContent>
         {accountsList.length === 0 ? (

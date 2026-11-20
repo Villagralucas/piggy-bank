@@ -183,6 +183,12 @@ export const demoStore = {
     }
   },
 
+  createCategory(data: Pick<Category, "name" | "kind" | "color">) {
+    const category: Category = { id: uid(), user_id: DEMO_USER_ID, created_at: new Date().toISOString(), ...data };
+    demoCategories.push(category);
+    return category;
+  },
+
   getRecurring(): RecurringTransaction[] {
     return demoRecurring;
   },
