@@ -26,6 +26,10 @@ const demoCategories: Category[] = [
   { id: uid(), user_id: DEMO_USER_ID, name: "Otros gastos", kind: "expense", color: "#64748b", created_at: now },
 ];
 
+for (const [name, budget] of [["Comida", 180000], ["Entretenimiento", 100000], ["Transporte", 70000], ["Servicios", 150000]] as const) {
+  demoCategories.find((c) => c.name === name)!.monthly_budget = budget;
+}
+
 function categoryId(name: string) {
   return demoCategories.find((c) => c.name === name)!.id;
 }
@@ -183,6 +187,10 @@ export const demoStore = {
     }
   },
 
+  setCategoryBudget(categoryId: string, budget: number | null) {
+    const category = demoCategories.find((c) => c.id === categoryId);
+    if (category) category.monthly_budget = budget;
+  },
   createCategory(data: Pick<Category, "name" | "kind" | "color">) {
     const category: Category = { id: uid(), user_id: DEMO_USER_ID, created_at: new Date().toISOString(), ...data };
     demoCategories.push(category);

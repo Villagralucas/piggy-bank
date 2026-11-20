@@ -6,6 +6,8 @@ import { demoStore } from "@/lib/demo/store";
 import { syncRecurring } from "@/lib/recurring";
 import { getMonthlyBudget } from "@/lib/settings";
 import { getDollarRates, toPesos } from "@/lib/dollar";
+import { ALERT_THRESHOLD, categoryBudgetStatus } from "@/lib/budget-alerts";
+import { CategoryBudgetsDialog } from "@/components/dashboard/category-budgets-dialog";
 import { DollarQuotes } from "@/components/dollar/dollar-quotes";
 import type { Account, Category, SavingsGoal, Transaction } from "@/lib/types";
 import { accountBalance } from "@/lib/balances";
@@ -22,6 +24,7 @@ import {
   Scale,
   TrendingDown,
   TrendingUp,
+  TriangleAlert,
 } from "lucide-react";
 
 const MONTH_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
@@ -105,16 +108,33 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
   // Spending by category this month, biggest first
   const categoryMap = new Map(categoriesList.map((c) => [c.id, c]));
-  const byCategory = new Map<string, { name: string; color: string; value: number }>();
+  const byCategory = new Map<string, { name: string; color: string; value: number; budget: number | null }>();
   for (const t of thisMonth.filter((t) => t.type === "expense")) {
     const c = t.category_id ? categoryMap.get(t.category_id) : undefined;
     const key = c?.name ?? "Sin categoría";
-    const entry = byCategory.get(key) ?? { name: key, color: c?.color ?? "#94a3b8", value: 0 };
+    const entry = byCategory.get(key) ?? {
+      name: key,
+      color: c?.color ?? "#94a3b8",
+      value: 0,
+      budget: c?.monthly_budget ? Number(c.monthly_budget) : null,
+    };
     entry.value += Number(t.amount);
     byCategory.set(key, entry);
   }
   const categoryRanking = [...byCategory.values()].sort((a, b) => b.value - a.value);
   const topCategory = categoryRanking[0]?.value ?? 0;
+
+  // Budget alerts: categories at 80%+ of their limit, and the overall budget.
+  const budgetStatus = categoryBudgetStatus(categoriesList, thisMonth);
+  const spentById: Record<string, number> = {};
+  for (const t of thisMonth) {
+    if (t.type === "expense" && t.category_id) {
+      spentById[t.category_id] = (spentById[t.category_id] ?? 0) + Number(t.amount);
+    }
+  }
+  const alerts = budgetStatus
+    .filter((b) => b.ratio >= ALERT_THRESHOLD)
+    .sort((a, b) => b.ratio - a.ratio);
 
   // Last 12 months for the trend chart
   const trend: TrendPoint[] = [];
@@ -159,6 +179,24 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           />
         </div>
       </div>
+
+      {/* Budget alerts */}
+      {(alerts.length > 0 || (budget && monthExpense / budget >= ALERT_THRESHOLD)) && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-chart-4/40 bg-chart-4/10 p-4">
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            <TriangleAlert className="size-4 text-chart-4" />
+            Ojo con el presupuesto
+          </p>
+          <ul className="flex flex-col gap-1.5 text-sm">
+            {budget !== null && budget > 0 && monthExpense / budget >= ALERT_THRESHOLD && (
+              <AlertRow name="Total del mes" color="var(--primary)" ratio={monthExpense / budget} spent={monthExpense} limit={budget} />
+            )}
+            {alerts.map((a) => (
+              <AlertRow key={a.id} name={a.name} color={a.color} ratio={a.ratio} spent={a.spent} limit={a.budget} />
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -240,7 +278,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           </CardContent>
         </Card>
         <Card className="finance-card lg:col-span-2">
-          <CardHeader>
+          <CardHeader className="relative">
+            <div className="absolute top-0 right-4">
+              <CategoryBudgetsDialog categories={categoriesList} spentById={spentById} />
+            </div>
             <p className="finance-label">Gastos por categoría</p>
             <CardTitle className="mt-1 font-heading text-xl">
               En qué se te fue la plata este mes
@@ -262,15 +303,23 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                     </div>
                     <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full"
+                        className={cn(
+                          "h-full rounded-full",
+                          c.budget && (c.value >= c.budget ? "bg-destructive" : c.value >= c.budget * ALERT_THRESHOLD ? "bg-chart-4" : "")
+                        )}
                         style={{
-                          width: `${Math.max(4, Math.round((c.value / topCategory) * 100))}%`,
-                          backgroundColor: c.color,
+                          width: `${Math.max(4, Math.min(100, Math.round((c.value / (c.budget ?? topCategory)) * 100)))}%`,
+                          backgroundColor:
+                            c.budget && c.value >= c.budget * ALERT_THRESHOLD ? undefined : c.color,
                         }}
                       />
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {Math.round((c.value / monthExpense) * 100)}% de tus gastos
+                      {c.budget !== null &&
+                        (c.value > c.budget
+                          ? ` · te pasaste ${formatCurrency(c.value - c.budget)}`
+                          : ` · quedan ${formatCurrency(c.budget - c.value)} de ${formatCurrency(c.budget)}`)}
                     </p>
                   </li>
                 ))}
@@ -394,5 +443,35 @@ function Change({ value, goodWhenUp }: { value: number | null; goodWhenUp: boole
       <Arrow className="size-4" />
       {Math.abs(value)}% vs. el mes pasado
     </span>
+  );
+}
+
+function AlertRow({
+  name,
+  color,
+  ratio,
+  spent,
+  limit,
+}: {
+  name: string;
+  color: string;
+  ratio: number;
+  spent: number;
+  limit: number;
+}) {
+  const over = ratio >= 1;
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
+      <span className="flex items-center gap-2">
+        <span className="size-2.5 rounded-full" style={{ backgroundColor: color }} />
+        <span className="font-medium">{name}</span>
+        <span className={over ? "text-destructive" : "text-chart-4"}>
+          {over ? `te pasaste (${Math.floor(ratio * 100)}%)` : `${Math.floor(ratio * 100)}% usado`}
+        </span>
+      </span>
+      <span className="text-muted-foreground tabular-nums">
+        {formatCurrency(spent)} de {formatCurrency(limit)}
+      </span>
+    </li>
   );
 }

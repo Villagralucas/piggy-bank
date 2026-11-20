@@ -103,11 +103,12 @@ export function TransactionDialog({
     formData.set("type", type);
     startTransition(async () => {
       try {
-        await createTransaction(formData);
+        const { warning } = await createTransaction(formData);
         try {
           localStorage.setItem(LAST_ACCOUNT_KEY, String(formData.get("account_id")));
         } catch {}
         toast.success("Movimiento registrado");
+        if (warning) toast.warning(warning, { duration: 8000 });
         setOpen(false);
       } catch (err) {
         toast.error(

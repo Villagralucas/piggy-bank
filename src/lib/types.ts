@@ -19,6 +19,8 @@ export interface Category {
   kind: CategoryKind;
   color: string;
   created_at: string;
+  /** Monthly spending limit for this category (expense categories only). */
+  monthly_budget?: number | null;
 }
 
 export interface Transaction {
